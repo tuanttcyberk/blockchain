@@ -41,14 +41,10 @@ contract ClaimWeeklyRewards {
 
     function claim() public {
         require(block.timestamp >= startTime, "Claiming has not started yet");
-        require(block.timestamp <= endTime, "Claiming period has ended");
+        require(block.timestamp < endTime, "Claiming period has ended");
 
         uint256 currentWeek = getWeekNumber(block.timestamp);
         uint256 lastClaimed = lastClaimedWeek[msg.sender];
-
-        if (lastClaimed == 0) {
-            lastClaimed = 0;
-        }
 
         require(
             lastClaimed < currentWeek,
@@ -60,6 +56,15 @@ contract ClaimWeeklyRewards {
         lastClaimedWeek[msg.sender] = currentWeek;
 
         uint256 reward = weeksToClaim * weeklyReward;
+
+        require(
+            address(this).balance >= reward,
+            "Insufficient contract balance"
+        );
+
+        // Transfer reward
+        (bool success, ) = payable(msg.sender).call{value: reward}("");
+        require(success, "Reward transfer failed");
 
         emit Claimed(msg.sender, weeksToClaim, reward, block.timestamp);
     }

@@ -57,14 +57,14 @@ contract ClaimWeeklyRewards {
 
         uint256 reward = weeksToClaim * weeklyReward;
 
-        require(
-            address(this).balance >= reward,
-            "Insufficient contract balance"
-        );
+        // require(
+        //     address(this).balance >= reward,
+        //     "Insufficient contract balance"
+        // );
 
         // Transfer reward
-        (bool success, ) = payable(msg.sender).call{value: reward}("");
-        require(success, "Reward transfer failed");
+        // (bool success, ) = payable(msg.sender).call{value: reward}("");
+        // require(success, "Reward transfer failed");
 
         emit Claimed(msg.sender, weeksToClaim, reward, block.timestamp);
     }

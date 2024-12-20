@@ -15,5 +15,8 @@
     "typescript": ">=4.5.0"
   },
   "repository": "https://github.com/tuanttcyberk/blockchain.git",
-  "author": "Thanh Tuan <tranthanhtuan62@gmail.com>"
+  "author": "Thanh Tuan <tranthanhtuan62@gmail.com>",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0"
+  }
 }

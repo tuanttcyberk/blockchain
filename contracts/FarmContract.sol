@@ -8,7 +8,6 @@ contract FarmContract {
     using Strings for uint256;
 
     IERC20 public stakingToken;
-    IERC20 public rewardToken;
     address public owner;
     uint256 public totalStaked;
     uint256 public rewardPerSecond;
@@ -20,14 +19,9 @@ contract FarmContract {
     }
     mapping(address => UserInfo) public userInfo;
 
-    constructor(
-        IERC20 _stakingToken,
-        IERC20 _rewardToken,
-        uint256 _rewardPerSecond
-    ) {
+    constructor(IERC20 _stakingToken, uint256 _rewardPerSecond) {
         owner = msg.sender;
         stakingToken = IERC20(_stakingToken);
-        rewardToken = IERC20(_rewardToken);
         rewardPerSecond = _rewardPerSecond;
         lastUpdateRewardTime = block.timestamp;
     }
@@ -56,13 +50,13 @@ contract FarmContract {
             uint256 totalReward = (user.amount * rewardPerToken) / 1e36;
             uint256 availableReward = totalReward - user.rewardDebt;
             if (availableReward > 0) {
-                rewardToken.transfer(msg.sender, availableReward);
+                stakingToken.transfer(msg.sender, availableReward);
             }
         }
         // thêm số lượng stake cho người dùng
         user.amount += _amount;
         user.rewardDebt = (user.amount * rewardPerToken) / 1e36; // cập nhật mới rewardDebt từ lúc stake
-        stakingToken.transferFrom(msg.sender, address(this), _amount);
+        stakingToken.transfer(address(this), _amount);
         totalStaked += _amount;
     }
 
@@ -75,7 +69,7 @@ contract FarmContract {
         uint256 totalReward = (user.amount * rewardPerToken) /
             1e36 -
             user.rewardDebt;
-        stakingToken.transferFrom(address(this), msg.sender, totalReward);
+        stakingToken.transfer(msg.sender, totalReward);
         // trả về số lượng stake cho người dùng
         user.amount -= _amount;
         user.rewardDebt = (user.amount * rewardPerToken) / 1e36; // cập nhật mới rewardDebt
@@ -88,7 +82,7 @@ contract FarmContract {
         uint256 totalReward = ((user.amount * rewardPerToken) / 1e36) -
             user.rewardDebt;
         require(totalReward > 0, "Khong lam ma doi co an - Thay Huan");
-        stakingToken.transferFrom(address(this), msg.sender, totalReward);
+        stakingToken.transfer(msg.sender, totalReward);
         user.rewardDebt = (user.amount * rewardPerToken) / 1e36;
     }
 }

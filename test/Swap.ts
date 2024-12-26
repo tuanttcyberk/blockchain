@@ -58,10 +58,10 @@ describe("Swap", function () {
 
       // await swapContract.connect(owner).swap(token1Address, parseEther("1"));
 
-      const a = await token1Contract.balanceOf(contractAddress);
-      const b = await token2Contract.balanceOf(contractAddress);
-      console.log(a);
-      console.log(b);
+      // const a = await token1Contract.balanceOf(contractAddress);
+      // const b = await token2Contract.balanceOf(contractAddress);
+      // console.log(a);
+      // console.log(b);
     });
   });
 });

@@ -5,8 +5,9 @@
   "license": "MIT",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^22.10.5",
     "chai": "^4.2.0",
-    "ethers": "^6.4.0",
+    "ethers": "^6.13.4",
     "hardhat": "^2.22.16",
     "hardhat-gas-reporter": "^1.0.8",
     "solidity-coverage": "^0.8.0",
@@ -17,6 +18,9 @@
   "repository": "https://github.com/tuanttcyberk/blockchain.git",
   "author": "Thanh Tuan <tranthanhtuan62@gmail.com>",
   "dependencies": {
-    "@openzeppelin/contracts": "^5.1.0"
+    "@ethersproject/keccak256": "^5.7.0",
+    "@openzeppelin/contracts": "^5.1.0",
+    "@openzeppelin/merkle-tree": "^1.0.7",
+    "merkletreejs": "^0.4.1"
   }
 }

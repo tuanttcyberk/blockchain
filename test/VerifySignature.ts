@@ -1,49 +1,67 @@
 import { ethers } from "hardhat";
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
-import { Wallet } from "ethers";
+import { ethers as originalEthers, Wallet } from "ethers";
 import { expect } from "chai";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 async function deployContract() {
+  const [user] = await ethers.getSigners();
+
   const messageVerifier = await ethers.getContractFactory("VerifySignature");
   const messageVerifierContract = await messageVerifier.deploy(
     process.env.WALLET_1 as string
   );
 
-  return { messageVerifierContract };
+  return { messageVerifierContract, user };
 }
 
 describe("Verify Signature", function () {
   it("Valid Message", async function () {
-    const { messageVerifierContract } = await loadFixture(deployContract);
-    const wallet = new Wallet(process.env.PRIVATE_KEY_1 as string);
+    const { messageVerifierContract, user } = await loadFixture(deployContract);
 
-    const message = "ABC";
-    const messageHash = ethers.hashMessage(message);
-    const signMessage = await wallet.signMessage(message);
+    const userAddress = await user.getAddress();
+    const signer = new Wallet(process.env.PRIVATE_KEY_1 as string);
 
-    // const { r, s, v } = ethers.Signature.from(signMessage);
+    const message = userAddress;
 
-    // const isvalid = await contract.verifyMessage(messageHash, v, r, s);
-    // console.log(isvalid);
+    const messageHash = originalEthers.keccak256(
+      originalEthers.toUtf8Bytes(message)
+    );
+
+    const signMessage = await signer.signMessage(
+      originalEthers.getBytes(messageHash)
+    );
+
+    const valid = await messageVerifierContract.compareMessageWithHash(
+      userAddress,
+      messageHash
+    );
+    console.log(valid);
 
     await expect(
-      messageVerifierContract.claimOwnership(messageHash, signMessage)
+      messageVerifierContract
+        .connect(user)
+        .claimOwnership(messageHash, signMessage, userAddress)
     ).to.be.not.reverted;
   });
 
   it("Invalid Message", async function () {
     const { messageVerifierContract } = await loadFixture(deployContract);
-    const wallet = new Wallet(process.env.PRIVATE_KEY_2 as string);
+    const signer = new Wallet(process.env.PRIVATE_KEY_2 as string);
 
     const message = "ABC";
-    const messageHash = ethers.hashMessage(message);
-    const signMessage = await wallet.signMessage(message);
+    const messageHash = originalEthers.keccak256(
+      originalEthers.toUtf8Bytes(message)
+    );
+
+    const signMessage = await signer.signMessage(
+      originalEthers.getBytes(messageHash)
+    );
 
     await expect(
-      messageVerifierContract.claimOwnership(messageHash, signMessage)
+      messageVerifierContract.claimOwnership(messageHash, signMessage, message)
     ).to.be.revertedWith("Invalid signature");
   });
 });

@@ -2,10 +2,10 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deploying contracts with the account:", deployer.address);
 
-  const verifySignature = await ethers.deployContract("VerifySignature", [deployer.address]);
-  await verifySignature.waitForDeployment();
+  const helloWorld = await ethers.deployContract("HelloWorld");
+  await helloWorld.waitForDeployment();
 
-  console.log("VerifySignature deployed to:", await verifySignature.getAddress());
+  console.log("HelloWorld deployed to:", await helloWorld.getAddress());
 }
 
 main()
